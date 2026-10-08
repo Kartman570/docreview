@@ -136,6 +136,12 @@ class SchemaTests(unittest.TestCase):
         self.assertIn('invalid_field:total', result.reasons)
         self.assertIn('invalid_field:invoice_date', result.reasons)
 
+    def test_blank_label_does_not_consume_next_line(self):
+        result = demo_extract(TEXT.replace('vendor: Example Paper Company', 'vendor: '))
+        self.assertIsNone(result.invoice.vendor)
+        self.assertIn('missing:vendor', result.reasons)
+        self.assertEqual(str(result.invoice.invoice_date), '2026-11-20')
+
     def test_strict_schema(self):
         base = demo_extract(TEXT).invoice.json()
         for value in (120, True, 120.0, '1e2', '-1.00', '100.001', 'Infinity'):

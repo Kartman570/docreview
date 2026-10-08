@@ -41,15 +41,21 @@ def normalize(candidate, provider, raw, reasons=None):
 
 def demo_extract(text):
     """Parse exact labels, with ambiguity routed for review; this is not AI."""
+    validate_text(text)
     candidate = dict.fromkeys(FIELDS)
     reasons = []
     for key in FIELDS:
-        values = re.findall(r'^' + key + r':\s*([^\n]*)$', text, re.MULTILINE)
+        values = re.findall(r'^' + key + r':[ \t]*([^\n]*)$', text, re.MULTILINE)
         if len(values) > 1:
             reasons.append(f'ambiguous:{key}')
         if values:
             candidate[key] = values[0].strip() or None
     return normalize(candidate, 'deterministic-demo-v1', json.dumps(candidate), reasons)
+
+
+def validate_text(text):
+    if not isinstance(text, str) or not text.strip() or len(text.encode()) > 65536:
+        raise ValueError('Document must contain 1–65536 UTF-8 bytes')
 
 
 class NoRedirect(request.HTTPRedirectHandler):
@@ -77,10 +83,16 @@ class LocalModel:
             body = response.read(1_048_577)
         if len(body) > 1_048_576:
             raise ValueError('Model response exceeds 1 MiB')
-        return json.loads(body)
+        result = json.loads(body)
+        if not isinstance(result, dict):
+            raise ValueError('Model server response must be a JSON object')
+        return result
 
     def extract(self, text):
+        validate_text(text)
         models = self.call('/api/tags').get('models', [])
+        if not isinstance(models, list) or any(not isinstance(m, dict) for m in models):
+            raise ValueError('Invalid installed-model listing')
         installed = [m for m in models if m.get('name') == self.model]
         if not installed or any(m.get('remote_model') or m.get('remote_host') for m in installed):
             raise ValueError('Requested model is not installed locally; no model will be downloaded')
@@ -93,6 +105,8 @@ class LocalModel:
             'prompt': text,
         })
         raw = result.get('response', '')
+        if not isinstance(raw, str):
+            raw = json.dumps(raw)
         reasons = ['model_requires_review:uncalibrated extraction']
         if result.get('done') is not True:
             reasons.append('incomplete_model_response')

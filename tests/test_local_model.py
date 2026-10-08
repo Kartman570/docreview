@@ -84,6 +84,11 @@ class LocalModelTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             LocalModel('example:cloud')
 
+    def test_oversize_document_refused_before_network(self):
+        with self.assertRaises(ValueError):
+            self.model.extract('x' * 65537)
+        self.assertEqual(self.calls, [])
+
     def test_redirect_refused(self):
         self.redirect = True
         with self.assertRaisesRegex(ValueError, 'redirects'):
