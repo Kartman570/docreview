@@ -2,10 +2,14 @@
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 import json
 import threading
+import subprocess
+import sys
+import tempfile
+from pathlib import Path
 import unittest
 
 from docreview.extract import LocalModel, demo_extract
-from test_workflow import TEXT
+from test_workflow import ROOT, TEXT
 
 
 class LocalModelTests(unittest.TestCase):
@@ -59,6 +63,18 @@ class LocalModelTests(unittest.TestCase):
         self.assertEqual(result.provider, 'ollama:synthetic:fixture')
         self.assertIn('model_requires_review:uncalibrated extraction', result.reasons)
         self.assertIn('amount_mismatch:subtotal + tax != total', result.reasons)
+
+    def test_cli_uses_local_adapter_and_persists_provider(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result = subprocess.run([
+                sys.executable, '-m', 'docreview', '--db', str(Path(directory) / 'model.sqlite3'),
+                'ingest', 'examples/wrong-amount.txt', '--provider', 'ollama',
+                '--model', 'synthetic:fixture', '--model-url', self.model.url,
+            ], cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(result.returncode, 0, result.stderr)
+        record = json.loads(result.stdout)
+        self.assertEqual(record['provider'], 'ollama:synthetic:fixture')
+        self.assertEqual(record['status'], 'needs_review')
 
     def test_absent_model_never_generates_or_pulls(self):
         self.installed = False
