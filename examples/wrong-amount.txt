@@ -1,0 +1,8 @@
+SYNTHETIC INVOICE — no payment due
+invoice_id: SYN-002
+vendor: Example Paper Company
+invoice_date: 2026-11-20
+currency: USD
+subtotal: 100.00
+tax: 20.00
+total: 129.00

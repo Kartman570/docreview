@@ -1,0 +1,132 @@
+[
+  {
+    "id": "clean-usd",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-001\nvendor: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: USD\nsubtotal: 100.00\ntax: 20.00\ntotal: 120.00\n",
+    "expected": {
+      "invoice_id": "SYN-001",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  },
+  {
+    "id": "clean-eur",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-EUR\nvendor: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: EUR\nsubtotal: 35.10\ntax: 7.02\ntotal: 42.12\n",
+    "expected": {
+      "invoice_id": "SYN-EUR",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "EUR",
+      "subtotal": "35.10",
+      "tax": "7.02",
+      "total": "42.12"
+    }
+  },
+  {
+    "id": "decimal-boundary",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-GBP\nvendor: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: GBP\nsubtotal: 0.10\ntax: 0.20\ntotal: 0.30\n",
+    "expected": {
+      "invoice_id": "SYN-GBP",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "GBP",
+      "subtotal": "0.10",
+      "tax": "0.20",
+      "total": "0.30"
+    }
+  },
+  {
+    "id": "wrong-amount",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-002\nvendor: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: USD\nsubtotal: 100.00\ntax: 20.00\ntotal: 129.00\n",
+    "expected": {
+      "invoice_id": "SYN-002",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  },
+  {
+    "id": "missing-vendor",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-001\ninvoice_date: 2026-11-20\ncurrency: USD\nsubtotal: 100.00\ntax: 20.00\ntotal: 120.00\n",
+    "expected": {
+      "invoice_id": "SYN-001",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  },
+  {
+    "id": "duplicate-total",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-001\nvendor: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: USD\nsubtotal: 100.00\ntax: 20.00\ntotal: 129.00\ntotal: 120.00\n",
+    "expected": {
+      "invoice_id": "SYN-001",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  },
+  {
+    "id": "invalid-date",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-001\nvendor: Example Paper Company\ninvoice_date: 2026-02-30\ncurrency: USD\nsubtotal: 100.00\ntax: 20.00\ntotal: 120.00\n",
+    "expected": {
+      "invoice_id": "SYN-001",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  },
+  {
+    "id": "invalid-money",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-001\nvendor: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: USD\nsubtotal: 100.00\ntax: 20.00\ntotal: 12O.00\n",
+    "expected": {
+      "invoice_id": "SYN-001",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  },
+  {
+    "id": "unsupported-currency",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-001\nvendor: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: US dollars\nsubtotal: 100.00\ntax: 20.00\ntotal: 120.00\n",
+    "expected": {
+      "invoice_id": "SYN-001",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  },
+  {
+    "id": "unknown-label",
+    "text": "SYNTHETIC INVOICE \u2014 no payment due\ninvoice_id: SYN-001\nseller: Example Paper Company\ninvoice_date: 2026-11-20\ncurrency: USD\nsubtotal: 100.00\ntax: 20.00\ntotal: 120.00\n",
+    "expected": {
+      "invoice_id": "SYN-001",
+      "vendor": "Example Paper Company",
+      "invoice_date": "2026-11-20",
+      "currency": "USD",
+      "subtotal": "100.00",
+      "tax": "20.00",
+      "total": "120.00"
+    }
+  }
+]
