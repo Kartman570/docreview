@@ -8,12 +8,16 @@ FIELDS = ('invoice_id', 'vendor', 'invoice_date', 'currency', 'subtotal', 'tax',
 MONEY = ('subtotal', 'tax', 'total')
 SCHEMA = {
     'type': 'object', 'additionalProperties': False, 'required': list(FIELDS),
-    'properties': {key: {'type': ['string', 'null']} for key in FIELDS},
+    'properties': {key: {'type': ['string', 'null'], 'minLength': 1, 'maxLength': 200}
+                   for key in FIELDS},
 }
 for key in MONEY:
     SCHEMA['properties'][key]['pattern'] = r'^(0|[1-9][0-9]{0,9})\.[0-9]{2}$'
 SCHEMA['properties']['currency']['enum'] = ['USD', 'EUR', 'GBP', None]
 SCHEMA['properties']['invoice_date']['format'] = 'date'
+SCHEMA['properties']['invoice_date']['pattern'] = r'^\d{4}-\d{2}-\d{2}$'
+for key in ('invoice_id', 'vendor'):
+    SCHEMA['properties'][key]['pattern'] = r'\S'
 
 
 @dataclass(frozen=True)
